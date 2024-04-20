@@ -64,3 +64,5 @@ with open("data.csv", "x") as csv:
 
 os.remove('citation-network-dataset.zip')
 
+# Print out the most common fields of study
+citations_df.fox.mode()
