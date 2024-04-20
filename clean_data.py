@@ -43,7 +43,8 @@ with data_zf:
             # DEBUG
             if i >= MAX_OBJECTS:
                 break
-            process_json_obj(obj)
+            if obj.get('n_citation') > 1:
+                process_json_obj(obj)
 
 # Create a DataFrame From Our Columns
 citations_df = pd.DataFrame({
