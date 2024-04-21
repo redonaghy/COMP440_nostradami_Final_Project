@@ -14,11 +14,15 @@ api.authenticate()
 ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], [], [], [], [], [], []
 
 # DEBUG Stop Processing Objects After X Objects
-MAX_OBJECTS = 1000
+IS_MAX_OBJECTS_ON = False
+NUM_MAX_OBJECTS= 5
 
+print("Making the Zip File...")
 # Grab Dataset and Place In CWD
-api.dataset_download_files('mathurinache/citation-network-dataset')
+if not (os.path.isfile("./citation-network-dataset.zip")):
+    api.dataset_download_files('mathurinache/citation-network-dataset') # Put this back later
 data_zf = ZipFile('citation-network-dataset.zip', 'r')
+
 
 # Takes Values From JSON Entry and Appends Them To Colums
 def process_json_obj(obj):
@@ -35,17 +39,20 @@ def process_json_obj(obj):
         tmp.append(field.get("name"))
     fos.append(', '.join(map(str, tmp)))
 
+print("Making columns FROM JSON Data...")
 # Create Columns From JSON Data
 with data_zf:
     with data_zf.open('dblp.v12.json') as json:
         objects = items(json, 'item')
         for i, obj, in enumerate(objects):
             # DEBUG
-            if i >= MAX_OBJECTS:
+            if IS_MAX_OBJECTS_ON and i >= NUM_MAX_OBJECTS:
                 break
-            if obj.get('n_citation') > 1:
+            if obj.get('n_citation') >= 1:
+                print(i)
                 process_json_obj(obj)
 
+print("Creating Dataframe from Columns...")
 # Create a DataFrame From Our Columns
 citations_df = pd.DataFrame({
     'ID': ids,
@@ -58,11 +65,11 @@ citations_df = pd.DataFrame({
     'Field of Study': fos
 })
 
+print("Making CSV...")
 # Write DF To CSV
 with open("data.csv", "x") as csv:
-  csv.write(citations_df.to_csv())
+  csv.write(citations_df.to_csv(index=False))
 
-os.remove('citation-network-dataset.zip')
+# os.remove('citation-network-dataset.zip')
 
-# Print out the most common fields of study
-citations_df.fox.mode()
+print("Finished making the CSV!")
