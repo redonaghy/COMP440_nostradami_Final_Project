@@ -15,12 +15,12 @@ ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], 
 
 # DEBUG Stop Processing Objects After X Objects
 IS_MAX_OBJECTS_ON = False
-NUM_MAX_OBJECTS= 5
+NUM_MAX_OBJECTS= 10
 
 print("Making the Zip File...")
 # Grab Dataset and Place In CWD
 if not (os.path.isfile("./citation-network-dataset.zip")):
-    api.dataset_download_files('mathurinache/citation-network-dataset') # Put this back later
+    api.dataset_download_files('mathurinache/citation-network-dataset')
 data_zf = ZipFile('citation-network-dataset.zip', 'r')
 
 
@@ -46,10 +46,9 @@ with data_zf:
         objects = items(json, 'item')
         for i, obj, in enumerate(objects):
             # DEBUG
-            if IS_MAX_OBJECTS_ON and i >= NUM_MAX_OBJECTS:
+            if IS_MAX_OBJECTS_ON and i >= NUM_MAX_OBJECTS - 1:
                 break
             if obj.get('n_citation') >= 1:
-                print(i)
                 process_json_obj(obj)
 
 print("Creating Dataframe from Columns...")
@@ -68,7 +67,7 @@ citations_df = pd.DataFrame({
 print("Making CSV...")
 # Write DF To CSV
 with open("data.csv", "x") as csv:
-  csv.write(citations_df.to_csv(index=False))
+  csv.write(citations_df.to_csv())
 
 # os.remove('citation-network-dataset.zip')
 
