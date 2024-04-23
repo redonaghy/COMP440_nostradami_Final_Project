@@ -14,10 +14,9 @@ api.authenticate()
 ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], [], [], [], [], [], []
 
 # DEBUG Stop Processing Objects After X Objects
-IS_MAX_OBJECTS_ON = False
-NUM_MAX_OBJECTS= 10
+IS_MAX_OBJECTS_ON = True
+NUM_MAX_OBJECTS= 100000
 
-print("Making the Zip File...")
 # Grab Dataset and Place In CWD
 if not (os.path.isfile("./citation-network-dataset.zip")):
     api.dataset_download_files('mathurinache/citation-network-dataset')
@@ -27,7 +26,7 @@ data_zf = ZipFile('citation-network-dataset.zip', 'r')
 # Takes Values From JSON Entry and Appends Them To Colums
 def process_json_obj(obj):
     ids.append(obj.get('id'))
-    titles.append(obj.get('title'))
+    titles.append(' '.join(obj.get('title').split()))
     years.append(obj.get('year'))
     n_citations.append(obj.get('n_citation'))
     doc_types.append(obj.get('doc_type'))
@@ -64,11 +63,12 @@ citations_df = pd.DataFrame({
     'Field of Study': fos
 })
 
-print("Making CSV...")
-# Write DF To CSV
-with open("data.csv", "x") as csv:
-  csv.write(citations_df.to_csv())
+citations_df = citations_df.dropna(subset=["ID"])
+citations_df = citations_df.dropna(subset=["Field of Study"])
 
-# os.remove('citation-network-dataset.zip')
+print("Making CSV...")
+with open("indexed_data.csv", "x") as csv:
+  csv.write(citations_df.to_csv(index=False))
 
 print("Finished making the CSV!")
+
