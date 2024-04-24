@@ -14,8 +14,8 @@ api.authenticate()
 ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], [], [], [], [], [], []
 
 # DEBUG Stop Processing Objects After X Objects
-IS_MAX_OBJECTS_ON = True
-NUM_MAX_OBJECTS= 100000
+IS_MAX_OBJECTS_ON = False
+NUM_MAX_OBJECTS= 1000
 
 # Grab Dataset and Place In CWD
 if not (os.path.isfile("./citation-network-dataset.zip")):
@@ -68,7 +68,6 @@ citations_df = citations_df.dropna(subset=["Field of Study"])
 
 print("Making CSV...")
 with open("indexed_data.csv", "x") as csv:
-  csv.write(citations_df.to_csv(index=False))
+  csv.write(citations_df.to_csv())
 
 print("Finished making the CSV!")
-
