@@ -11,11 +11,12 @@ api = KaggleApi()
 api.authenticate()
 
 # Initialize Lists To Store Data
-ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], [], [], [], [], [], []
+# ids, titles, years, n_citations, doc_types, authors_list, venues, fos = [], [], [], [], [], [], [], []
+refs = []
 
 # DEBUG Stop Processing Objects After X Objects
 IS_MAX_OBJECTS_ON = False
-NUM_MAX_OBJECTS= 1000
+NUM_MAX_OBJECTS= 100000
 
 # Grab Dataset and Place In CWD
 if not (os.path.isfile("./citation-network-dataset.zip")):
@@ -25,18 +26,17 @@ data_zf = ZipFile('citation-network-dataset.zip', 'r')
 
 # Takes Values From JSON Entry and Appends Them To Colums
 def process_json_obj(obj):
-    ids.append(obj.get('id'))
-    titles.append(' '.join(obj.get('title').split()))
-    years.append(obj.get('year'))
-    n_citations.append(obj.get('n_citation'))
-    doc_types.append(obj.get('doc_type'))
-    authors_names = ", ".join([author.get('name') for author in obj.get('authors', [])])
-    authors_list.append(authors_names)
-    venues.append(obj.get('venue', {}).get('raw', ''))
-    tmp = []
-    for field in obj.get("fos", []):
-        tmp.append(field.get("name"))
-    fos.append(', '.join(map(str, tmp)))
+    #ids.append(obj.get('id'))
+    #titles.append(' '.join(obj.get('title').split()))
+    #years.append(obj.get('year'))
+    #n_citations.append(obj.get('n_citation'))
+    #doc_types.append(obj.get('doc_type'))
+    #authors_names = ", ".join([author.get('name') for author in obj.get('authors', [])])
+    #authors_list.append(authors_names)
+    #venues.append(obj.get('venue', {}).get('raw', ''))
+    refs.append(', '.join(map(str, obj.get("references", []))))
+    
+
 
 print("Making columns FROM JSON Data...")
 # Create Columns From JSON Data
@@ -53,21 +53,19 @@ with data_zf:
 print("Creating Dataframe from Columns...")
 # Create a DataFrame From Our Columns
 citations_df = pd.DataFrame({
-    'ID': ids,
-    'Title': titles,
-    'Year': years,
-    'Citations': n_citations,
-    'Document Type': doc_types,
-    'Authors': authors_list,
-    'Venue': venues,
-    'Field of Study': fos
+    #'ID': ids,
+    #'Title': titles,
+    #'Year': years,
+    #'Citations': n_citations,
+    #'Document Type': doc_types,
+    #'Authors': authors_list,
+    #'Venue': venues,
+    #'Field of Study': fos
+    "References": refs,
 })
-
-citations_df = citations_df.dropna(subset=["ID"])
-citations_df = citations_df.dropna(subset=["Field of Study"])
 
 print("Making CSV...")
 with open("indexed_data.csv", "x") as csv:
-  csv.write(citations_df.to_csv())
+  csv.write(citations_df.to_csv(index=False))
 
 print("Finished making the CSV!")
