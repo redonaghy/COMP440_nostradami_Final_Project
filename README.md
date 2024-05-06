@@ -2,6 +2,18 @@
 
 ## Project goal
 
+Our goal with this project was to gain insight into how the academic field of 
+CS has changed over time. With this project, we aimed to see how the field has 
+interacted with other academic fields over the years, and show where the 
+interests of the field have been. 
+
+## Project Files
+
+`clean_data.py` is the python script used to clean the dataset we worked with
+and put it into a csv.
+
+`COMP440_Final_project_Larger_dataset` is the notebook we used for our analysis.
+
 ## To use this project, you'll need:
 
 a working `python3` installation, `jupyterlab`, `ipython`
